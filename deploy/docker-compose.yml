@@ -1,0 +1,107 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: mediatrust
+      POSTGRES_PASSWORD: mediatrust
+      POSTGRES_DB: mediatrust
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@mediatrust.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio12345
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  seq:
+    image: datalust/seq:2025.2
+    container_name: seq
+    ports:
+      - "5341:80"
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "Admin123!"
+    volumes:
+      - seq-data:/data
+
+  gateway:
+    build:
+      context: ..
+      dockerfile: src/Gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rabbitmq
+      - postgres
+      - seq
+
+  ingest:
+    build:
+      context: ..
+      dockerfile: src/Ingest/Dockerfile
+    ports:
+      - "8081:8080"
+    depends_on:
+      - rabbitmq
+      - postgres
+      - minio
+      - seq
+
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: src/Orchestrator/Dockerfile
+    ports:
+      - "8082:8080"
+    depends_on:
+      - rabbitmq
+      - postgres
+      - seq
+
+  detectors:
+    build:
+      context: ..
+      dockerfile: src/Detectors/Dockerfile
+    ports:
+      - "8083:8080"
+    depends_on:
+      - rabbitmq
+      - postgres
+      - minio
+      - seq
+
+  report:
+    build:
+      context: ..
+      dockerfile: src/Report/Dockerfile
+    ports:
+      - "8084:8080"
+    depends_on:
+      - rabbitmq
+      - postgres
+      - seq
+
+volumes:
+  seq-data:

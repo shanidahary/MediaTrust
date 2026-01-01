@@ -1,0 +1,11 @@
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\bin\Debug\net10.0\MediaTrust.Contracts.deps.json
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\bin\Debug\net10.0\MediaTrust.Contracts.dll
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\bin\Debug\net10.0\MediaTrust.Contracts.pdb
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\MediaTrust.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\MediaTrust.Contracts.AssemblyInfoInputs.cache
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\MediaTrust.Contracts.AssemblyInfo.cs
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\MediaTrust.Contracts.csproj.CoreCompileInputs.cache
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\MediaTrust.Contracts.dll
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\refint\MediaTrust.Contracts.dll
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\MediaTrust.Contracts.pdb
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\ref\MediaTrust.Contracts.dll

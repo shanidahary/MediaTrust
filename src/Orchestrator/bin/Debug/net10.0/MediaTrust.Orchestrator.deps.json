@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "MediaTrust.Orchestrator/1.0.0": {
+        "dependencies": {
+          "MediaTrust.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "MediaTrust.Orchestrator.dll": {}
+        }
+      },
+      "MediaTrust.Contracts/1.0.0": {
+        "runtime": {
+          "MediaTrust.Contracts.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MediaTrust.Orchestrator/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MediaTrust.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
