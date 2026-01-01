@@ -1,93 +1,46 @@
-####################################
-# .NET
-####################################
-bin/
-obj/
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
-
-####################################
-# Build outputs
-####################################
-[Bb]uild/
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-arm/
-arm64/
-
-####################################
-# VS Code
-####################################
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-####################################
-# Rider / Visual Studio
-####################################
-.idea/
-.vs/
-
-####################################
-# OS
-####################################
+# OS cruft
 .DS_Store
 Thumbs.db
 
-####################################
-# Logs
-####################################
-*.log
+# IDE / tooling state
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
 
-####################################
-# Docker
-####################################
-**/docker-compose.override.yml
-**/*.env
-.env
-
-####################################
-# Database / volumes
-####################################
-postgres-data/
-pgdata/
-minio-data/
-
-####################################
-# Test artifacts
-####################################
+# .NET build outputs
+**/bin/
+**/obj/
+**/out/
+[Rr]elease/
+[Dd]ebug/
+artifacts/
 TestResults/
-
-####################################
-# Temporary files
-####################################
-*.tmp
-*.temp
-*.bak
-*.swp
-
-####################################
-# Coverage
-####################################
-coverage/
+*.trx
 *.coverage
 *.coveragexml
 
-####################################
 # Packages
-####################################
+packages/
 *.nupkg
-.nuget/packages/
+*.snupkg
 
-####################################
-# Secrets
-####################################
-secrets.json
-appsettings.*.json
-!appsettings.json
+# Logs
+*.log
+logs/
+
+# Docker / runtime
+*.pid
+
+# Local configuration secrets
+appsettings.Local.json
+*.user.secrets.json
+
+# Misc
+node_modules/
+/coverage/
+.env
+explaintions/

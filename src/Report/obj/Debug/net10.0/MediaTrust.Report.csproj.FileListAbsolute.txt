@@ -30,3 +30,4 @@ C:\Users\Shani\Desktop\MediaTrust\src\Report\obj\Debug\net10.0\refint\MediaTrust
 C:\Users\Shani\Desktop\MediaTrust\src\Report\obj\Debug\net10.0\MediaTrust.Report.pdb
 C:\Users\Shani\Desktop\MediaTrust\src\Report\obj\Debug\net10.0\MediaTrust.Report.genruntimeconfig.cache
 C:\Users\Shani\Desktop\MediaTrust\src\Report\obj\Debug\net10.0\ref\MediaTrust.Report.dll
+C:\Users\Shani\Desktop\MediaTrust\src\Report\obj\Debug\net10.0\MediaTrust.Report.sourcelink.json

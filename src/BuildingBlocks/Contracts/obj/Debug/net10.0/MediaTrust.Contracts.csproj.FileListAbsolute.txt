@@ -9,3 +9,4 @@ C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0
 C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\refint\MediaTrust.Contracts.dll
 C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\MediaTrust.Contracts.pdb
 C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\ref\MediaTrust.Contracts.dll
+C:\Users\Shani\Desktop\MediaTrust\src\BuildingBlocks\Contracts\obj\Debug\net10.0\MediaTrust.Contracts.sourcelink.json

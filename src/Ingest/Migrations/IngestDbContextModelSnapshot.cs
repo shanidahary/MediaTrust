@@ -51,6 +51,9 @@ namespace MediaTrust.Ingest.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FileName")
+                        .IsUnique();
+
                     b.ToTable("MediaItems");
                 });
 #pragma warning restore 612, 618

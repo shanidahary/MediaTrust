@@ -30,3 +30,4 @@ C:\Users\Shani\Desktop\MediaTrust\src\Detectors\obj\Debug\net10.0\refint\MediaTr
 C:\Users\Shani\Desktop\MediaTrust\src\Detectors\obj\Debug\net10.0\MediaTrust.Detectors.pdb
 C:\Users\Shani\Desktop\MediaTrust\src\Detectors\obj\Debug\net10.0\MediaTrust.Detectors.genruntimeconfig.cache
 C:\Users\Shani\Desktop\MediaTrust\src\Detectors\obj\Debug\net10.0\ref\MediaTrust.Detectors.dll
+C:\Users\Shani\Desktop\MediaTrust\src\Detectors\obj\Debug\net10.0\MediaTrust.Detectors.sourcelink.json

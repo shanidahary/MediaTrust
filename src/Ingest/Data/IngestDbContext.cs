@@ -13,10 +13,24 @@ public sealed class IngestDbContext : DbContext
         modelBuilder.Entity<MediaItem>(e =>
         {
             e.HasKey(x => x.Id);
-            e.Property(x => x.FileName).HasMaxLength(512).IsRequired();
-            e.Property(x => x.ContentType).HasMaxLength(256).IsRequired();
-            e.Property(x => x.ObjectKey).HasMaxLength(1024).IsRequired();
-            e.Property(x => x.UploadedAtUtc).IsRequired();
+
+            e.Property(x => x.FileName)
+                .HasMaxLength(512)
+                .IsRequired();
+
+            e.HasIndex(x => x.FileName)
+                .IsUnique();
+
+            e.Property(x => x.ContentType)
+                .HasMaxLength(256)
+                .IsRequired();
+
+            e.Property(x => x.ObjectKey)
+                .HasMaxLength(1024)
+                .IsRequired();
+
+            e.Property(x => x.UploadedAtUtc)
+                .IsRequired();
         });
     }
 }

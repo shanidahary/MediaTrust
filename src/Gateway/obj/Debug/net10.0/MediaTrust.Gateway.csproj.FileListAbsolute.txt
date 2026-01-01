@@ -30,3 +30,4 @@ C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\refint\MediaTrus
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.pdb
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.genruntimeconfig.cache
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\ref\MediaTrust.Gateway.dll
+C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.sourcelink.json

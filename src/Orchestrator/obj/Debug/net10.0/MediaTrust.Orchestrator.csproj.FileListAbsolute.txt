@@ -30,3 +30,4 @@ C:\Users\Shani\Desktop\MediaTrust\src\Orchestrator\obj\Debug\net10.0\refint\Medi
 C:\Users\Shani\Desktop\MediaTrust\src\Orchestrator\obj\Debug\net10.0\MediaTrust.Orchestrator.pdb
 C:\Users\Shani\Desktop\MediaTrust\src\Orchestrator\obj\Debug\net10.0\MediaTrust.Orchestrator.genruntimeconfig.cache
 C:\Users\Shani\Desktop\MediaTrust\src\Orchestrator\obj\Debug\net10.0\ref\MediaTrust.Orchestrator.dll
+C:\Users\Shani\Desktop\MediaTrust\src\Orchestrator\obj\Debug\net10.0\MediaTrust.Orchestrator.sourcelink.json
