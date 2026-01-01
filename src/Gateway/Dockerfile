@@ -1,13 +1,16 @@
-# build
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
+COPY src/Gateway/MediaTrust.Gateway.csproj src/Gateway/
+RUN dotnet restore src/Gateway/MediaTrust.Gateway.csproj
 COPY . .
-RUN dotnet publish -c Release -o /out
+WORKDIR /src/src/Gateway
+RUN dotnet publish -c Release -o /app/publish
 
-# runtime
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+FROM base AS final
 WORKDIR /app
-COPY --from=build /out .
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
-ENTRYPOINT ["dotnet","MediaTrust.Gateway.dll"]
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "MediaTrust.Gateway.dll"]

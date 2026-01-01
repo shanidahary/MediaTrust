@@ -1,104 +1,85 @@
-using MassTransit;
-using MediaTrust.Contracts.Events;
+using System.Net.Http.Json;
 using MediaTrust.Ingest.Accessors;
 using MediaTrust.Ingest.Data;
 using MediaTrust.Ingest.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace MediaTrust.Ingest.Managers;
 
 public sealed class MediaIngestManager
 {
-    private readonly IMediaRepository _repository;
+    private readonly IMediaRepository _repo;
     private readonly IStorageAccessor _storage;
-    private readonly IPublishEndpoint _bus;
+    private readonly IHttpClientFactory _http;
     private readonly ILogger<MediaIngestManager> _logger;
 
     public MediaIngestManager(
-        IMediaRepository repository,
+        IMediaRepository repo,
         IStorageAccessor storage,
-        IPublishEndpoint bus,
+        IHttpClientFactory http,
         ILogger<MediaIngestManager> logger)
     {
-        _repository = repository;
+        _repo = repo;
         _storage = storage;
-        _bus = bus;
+        _http = http;
         _logger = logger;
     }
 
-    public async Task<UploadMediaResult> HandleUploadAsync(
-    HttpRequest request,
-    CancellationToken ct)
+    public async Task<UploadMediaResult> HandleUploadAsync(HttpRequest req, CancellationToken ct)
     {
-        if (!request.HasFormContentType)
-            throw new InvalidOperationException("Expected multipart/form-data.");
-
-        var form = await request.ReadFormAsync(ct);
-        var file = form.Files.GetFile("file");
-
-        if (file is null || file.Length == 0)
-            throw new InvalidOperationException("Missing file.");
-
-        var safeName = Path.GetFileName(file.FileName);
-
-        // CHECK FIRST
-        if (await _repository.ExistsByFileNameAsync(safeName, ct))
+        try
         {
-            _logger.LogWarning(
-                "Duplicate file upload blocked. FileName={FileName}",
-                safeName);
+            if (!req.HasFormContentType)
+                throw new InvalidOperationException("Expected multipart/form-data");
 
-            throw new InvalidOperationException(
-                $"File '{safeName}' already exists.");
+            var file = (await req.ReadFormAsync(ct)).Files.GetFile("file");
+            if (file == null || file.Length == 0)
+                throw new InvalidOperationException("Missing file");
+
+            var name = Path.GetFileName(file.FileName);
+            if (await _repo.ExistsByFileNameAsync(name, ct))
+                throw new InvalidOperationException("Duplicate file");
+
+            var mediaId = Guid.NewGuid();
+            var objectKey = $"{DateTime.UtcNow:yyyy/MM/dd}/{name}";
+
+            await using var s = file.OpenReadStream();
+            await _storage.UploadAsync(objectKey, s, file.Length, file.ContentType!, ct);
+
+            var entity = new MediaItem
+            {
+                Id = mediaId,
+                FileName = name,
+                ContentType = file.ContentType!,
+                SizeBytes = file.Length,
+                ObjectKey = objectKey,
+                UploadedAtUtc = DateTimeOffset.UtcNow
+            };
+
+            await _repo.AddAsync(entity, ct);
+
+            var client = _http.CreateClient("orchestrator");
+            await client.PostAsJsonAsync("jobs", new CreateJobRequest
+            {
+                MediaId = mediaId,
+                ObjectKey = objectKey,
+                ContentType = entity.ContentType,
+                SizeBytes = entity.SizeBytes
+            }, ct);
+
+            return new UploadMediaResult
+            {
+                MediaId = mediaId,
+                ObjectKey = objectKey,
+                FileName = name,
+                ContentType = entity.ContentType,
+                SizeBytes = entity.SizeBytes,
+                UploadedAtUtc = entity.UploadedAtUtc
+            };
         }
-
-        // ONLY NOW generate ID + ObjectKey
-        var mediaId = Guid.NewGuid();
-        var objectKey = $"{DateTime.UtcNow:yyyy/MM/dd}/{safeName}";
-
-        _logger.LogInformation(
-            "Uploading new media. MediaId={MediaId}, FileName={FileName}",
-            mediaId,
-            safeName);
-
-        await using var stream = file.OpenReadStream();
-        await _storage.UploadAsync(
-            objectKey,
-            stream,
-            file.Length,
-            file.ContentType ?? "application/octet-stream",
-            ct);
-
-        var item = new MediaItem
+        catch
         {
-            Id = mediaId,
-            FileName = safeName,
-            ContentType = file.ContentType ?? "application/octet-stream",
-            SizeBytes = file.Length,
-            ObjectKey = objectKey,
-            UploadedAtUtc = DateTimeOffset.UtcNow
-        };
-
-        await _repository.AddAsync(item, ct);
-
-        await _bus.Publish(new MediaUploaded(
-            mediaId,
-            objectKey,
-            item.FileName,
-            item.ContentType,
-            item.SizeBytes,
-            item.UploadedAtUtc
-        ), ct);
-
-        return new UploadMediaResult
-        {
-            MediaId = mediaId,
-            ObjectKey = objectKey,
-            FileName = item.FileName,
-            ContentType = item.ContentType,
-            SizeBytes = item.SizeBytes,
-            UploadedAtUtc = item.UploadedAtUtc
-        };
+            _logger.LogError("HandleUploadAsync failed");
+            throw;
+        }
     }
 }

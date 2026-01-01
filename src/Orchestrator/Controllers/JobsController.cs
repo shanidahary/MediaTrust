@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MediaTrust.Orchestrator.Managers;
+using MediaTrust.Orchestrator.Models;
 
 namespace MediaTrust.Orchestrator.Controllers;
 
@@ -10,9 +11,7 @@ public sealed class JobsController : ControllerBase
     private readonly AnalysisJobManager _manager;
     private readonly ILogger<JobsController> _logger;
 
-    public JobsController(
-        AnalysisJobManager manager,
-        ILogger<JobsController> logger)
+    public JobsController(AnalysisJobManager manager, ILogger<JobsController> logger)
     {
         _manager = manager;
         _logger = logger;
@@ -27,21 +26,60 @@ public sealed class JobsController : ControllerBase
 
             var jobs = await _manager.GetJobsAsync(ct);
 
-            _logger.LogInformation(
-                "Returning {Count} analysis jobs",
-                jobs.Count);
+            var response = jobs.Select(j => new
+            {
+                jobId = j.Id,
+                mediaId = j.MediaId,
+                objectKey = j.ObjectKey,
+                status = j.Status,
+                createdAtUtc = j.CreatedAtUtc,
+                updatedAtUtc = j.UpdatedAtUtc
+            });
 
-            return Ok(jobs);
-        }
-        catch (OperationCanceledException)
-        {
-            _logger.LogWarning("GET /jobs was cancelled");
-            throw;
+            return Ok(response);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to get analysis jobs");
+            _logger.LogError(ex, "Failed to get jobs");
             return StatusCode(500, "Failed to retrieve jobs");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateJobHttpRequest req, CancellationToken ct)
+    {
+        var id = await _manager.CreateJobAsync(
+            req.MediaId, req.ObjectKey, req.ContentType, req.SizeBytes, ct);
+
+        return Ok(new { jobId = id });
+    }
+
+    [HttpPatch("{jobId:guid}/status")]
+    public async Task<IActionResult> UpdateStatus(
+        Guid jobId,
+        [FromBody] UpdateJobStatusRequest request,
+        CancellationToken ct)
+    {
+        try
+        {
+            _logger.LogInformation(
+                "Updating job {JobId} to {Status}",
+                jobId,
+                request.Status);
+
+            await _manager.UpdateJobStatusAsync(jobId, request.Status, ct);
+
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Job not found {JobId}", jobId);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to update job status");
+            return StatusCode(500, "Internal error");
         }
     }
 }

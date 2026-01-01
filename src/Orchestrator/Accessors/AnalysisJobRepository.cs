@@ -64,4 +64,32 @@ public sealed class AnalysisJobRepository : IAnalysisJobRepository
             throw;
         }
     }
+
+    public async Task UpdateStatusAsync(
+        Guid jobId,
+        string status,
+        CancellationToken ct)
+    {
+        try
+        {
+            var job = await _db.AnalysisJobs
+                .FirstOrDefaultAsync(x => x.Id == jobId, ct);
+
+            if (job == null)
+                throw new InvalidOperationException("Job not found");
+
+            job.Status = status;
+            job.UpdatedAtUtc = DateTimeOffset.UtcNow;
+
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "DB failure updating job {JobId}",
+                jobId);
+            throw;
+        }
+    }
 }

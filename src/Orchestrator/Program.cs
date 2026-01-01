@@ -1,46 +1,43 @@
-using MassTransit;
 using MediaTrust.Orchestrator.Accessors;
-using MediaTrust.Orchestrator.Consumers;
 using MediaTrust.Orchestrator.Data;
 using MediaTrust.Orchestrator.Managers;
+using MediaTrust.Orchestrator.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --------------------------------------------------
+// Controllers
+// --------------------------------------------------
 builder.Services.AddControllers();
 
+// --------------------------------------------------
 // Postgres
+// --------------------------------------------------
 builder.Services.AddDbContext<OrchestratorDbContext>(opt =>
 {
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
 });
 
-// DI
+// --------------------------------------------------
+// Dependency Injection
+// --------------------------------------------------
 builder.Services.AddScoped<IAnalysisJobRepository, AnalysisJobRepository>();
 builder.Services.AddScoped<AnalysisJobManager>();
 
-// MassTransit
-builder.Services.AddMassTransit(x =>
-{
-    x.AddConsumer<MediaUploadedConsumer>();
+// RabbitMQ (publisher only, exchange-based)
+builder.Services.AddSingleton<RabbitMqClient>();
 
-    x.UsingRabbitMq((ctx, cfg) =>
-    {
-        cfg.Host("rabbitmq", "/", h =>
-        {
-            h.Username("guest");
-            h.Password("guest");
-        });
-
-        cfg.ConfigureEndpoints(ctx);
-    });
-});
-
+// --------------------------------------------------
+// Build app
+// --------------------------------------------------
 var app = builder.Build();
 
-// -------------------- DB migrate on startup (Polly) --------------------
+// --------------------------------------------------
+// DB migrate on startup (Polly retry)
+// --------------------------------------------------
 using (var scope = app.Services.CreateScope())
 {
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
@@ -51,7 +48,7 @@ using (var scope = app.Services.CreateScope())
         .Or<TimeoutException>()
         .WaitAndRetryAsync(
             retryCount: 5,
-            sleepDurationProvider: _ => TimeSpan.FromSeconds(5),
+            sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
             onRetry: (ex, delay, retry, _) =>
             {
                 logger.LogWarning(
@@ -60,8 +57,16 @@ using (var scope = app.Services.CreateScope())
                     delay.TotalSeconds);
             });
 
-    await retryPolicy.ExecuteAsync(() => db.Database.MigrateAsync());
+    await retryPolicy.ExecuteAsync(async () =>
+    {
+        await db.Database.MigrateAsync();
+        logger.LogInformation("Orchestrator database migrated successfully");
+    });
 }
 
+// --------------------------------------------------
+// Map endpoints
+// --------------------------------------------------
 app.MapControllers();
+
 app.Run();
