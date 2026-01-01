@@ -4,8 +4,8 @@
 
 **MediaTrust** is a distributed, microservices-based platform for uploading, analyzing,
 and reporting on media files.  
-The system demonstrates service isolation, event-driven workflows, controlled execution,
-and read-optimized reporting.
+The system demonstrates service isolation, message-driven orchestration,
+controlled execution, and read-optimized reporting.
 
 All services are containerized and communicate via HTTP and RabbitMQ.
 
