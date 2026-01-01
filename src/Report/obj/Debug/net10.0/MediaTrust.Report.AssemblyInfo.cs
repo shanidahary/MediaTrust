@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MediaTrust.Report")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0afb6e3f71a4550f1d6f9fe233509ba8522a308e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+29c1f867608261abe1bc0fb99f83e758690ac853")]
 [assembly: System.Reflection.AssemblyProductAttribute("MediaTrust.Report")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MediaTrust.Report")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
