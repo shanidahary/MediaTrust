@@ -7,4 +7,5 @@ public sealed class AnalysisJob
     public string ObjectKey { get; set; } = default!;
     public string Status { get; set; } = default!;
     public DateTimeOffset CreatedAtUtc { get; set; }
+    public DateTimeOffset? UpdatedAtUtc { get; set; }
 }

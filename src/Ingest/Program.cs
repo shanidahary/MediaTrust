@@ -1,9 +1,7 @@
-using MassTransit;
-using MediaTrust.Contracts.Events;
-using MediaTrust.Ingest.Data;
-using MediaTrust.Ingest.Storage;
-using MediaTrust.Ingest.Managers;
 using MediaTrust.Ingest.Accessors;
+using MediaTrust.Ingest.Data;
+using MediaTrust.Ingest.Managers;
+using MediaTrust.Ingest.Storage;
 using Microsoft.EntityFrameworkCore;
 using Minio;
 using Polly;
@@ -12,23 +10,28 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// -------------------- Controllers --------------------
+// --------------------------------------------------
+// Controllers
+// --------------------------------------------------
 builder.Services.AddControllers();
 
-// -------------------- Postgres --------------------
+// --------------------------------------------------
+// Postgres
+// --------------------------------------------------
 builder.Services.AddDbContext<IngestDbContext>(opt =>
 {
     var cs = builder.Configuration.GetConnectionString("Postgres")
-             ?? throw new InvalidOperationException("Postgres connection string is missing");
+        ?? throw new InvalidOperationException("Postgres connection string missing");
 
     opt.UseNpgsql(cs);
 });
 
-// MinIO options
+// --------------------------------------------------
+// MinIO configuration
+// --------------------------------------------------
 builder.Services.Configure<MinioOptions>(
     builder.Configuration.GetSection("Minio"));
 
-// MinIO client
 builder.Services.AddSingleton<IMinioClient>(sp =>
 {
     var opt = sp.GetRequiredService<IOptions<MinioOptions>>().Value;
@@ -43,34 +46,33 @@ builder.Services.AddSingleton<IMinioClient>(sp =>
     return client.Build();
 });
 
-// Storage
 builder.Services.AddSingleton<MinioStorage>();
 
-// -------------------- DI --------------------
+// --------------------------------------------------
+// HTTP clients
+// --------------------------------------------------
+builder.Services.AddHttpClient("orchestrator", client =>
+{
+    client.BaseAddress = new Uri(
+        builder.Configuration["Orchestrator:BaseUrl"]
+        ?? "http://orchestrator:8080/");
+});
+
+// --------------------------------------------------
+// Dependency Injection
+// --------------------------------------------------
 builder.Services.AddScoped<IMediaRepository, MediaRepository>();
 builder.Services.AddScoped<IStorageAccessor, StorageAccessor>();
 builder.Services.AddScoped<MediaIngestManager>();
 
-// -------------------- MassTransit / RabbitMQ --------------------
-builder.Services.AddMassTransit(x =>
-{
-    x.UsingRabbitMq((context, cfg) =>
-    {
-        var host = builder.Configuration["RabbitMq:Host"] ?? "rabbitmq";
-        var user = builder.Configuration["RabbitMq:Username"] ?? "guest";
-        var pass = builder.Configuration["RabbitMq:Password"] ?? "guest";
-
-        cfg.Host(host, "/", h =>
-        {
-            h.Username(user);
-            h.Password(pass);
-        });
-    });
-});
-
+// --------------------------------------------------
+// Build app
+// --------------------------------------------------
 var app = builder.Build();
 
-// -------------------- DB migrate on startup (Polly) --------------------
+// --------------------------------------------------
+// DB migrate on startup (Polly retry)
+// --------------------------------------------------
 using (var scope = app.Services.CreateScope())
 {
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
@@ -81,7 +83,7 @@ using (var scope = app.Services.CreateScope())
         .Or<TimeoutException>()
         .WaitAndRetryAsync(
             retryCount: 5,
-            sleepDurationProvider: _ => TimeSpan.FromSeconds(5),
+            sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
             onRetry: (ex, delay, retry, _) =>
             {
                 logger.LogWarning(
@@ -90,8 +92,16 @@ using (var scope = app.Services.CreateScope())
                     delay.TotalSeconds);
             });
 
-    await retryPolicy.ExecuteAsync(() => db.Database.MigrateAsync());
+    await retryPolicy.ExecuteAsync(async () =>
+    {
+        await db.Database.MigrateAsync();
+        logger.LogInformation("Ingest database migrated successfully");
+    });
 }
 
+// --------------------------------------------------
+// Map endpoints
+// --------------------------------------------------
 app.MapControllers();
+
 app.Run();

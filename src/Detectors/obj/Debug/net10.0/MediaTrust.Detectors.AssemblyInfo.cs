@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MediaTrust.Detectors")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+29c1f867608261abe1bc0fb99f83e758690ac853")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d2594b7d0f9174c28712d88f0074bcc13f2b55c5")]
 [assembly: System.Reflection.AssemblyProductAttribute("MediaTrust.Detectors")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MediaTrust.Detectors")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "6vwJMHJkZ98=",
+  "dgSpecHash": "wCSpLsdvGec=",
   "success": true,
   "projectFilePath": "C:\\Users\\Shani\\Desktop\\MediaTrust\\src\\Gateway\\MediaTrust.Gateway.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Shani\\.nuget\\packages\\system.io.hashing\\8.0.0\\system.io.hashing.8.0.0.nupkg.sha512",
+    "C:\\Users\\Shani\\.nuget\\packages\\yarp.reverseproxy\\2.3.0\\yarp.reverseproxy.2.3.0.nupkg.sha512"
+  ],
   "logs": []
 }

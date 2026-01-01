@@ -6,9 +6,6 @@ C:\Users\Shani\Desktop\MediaTrust\src\Gateway\bin\Debug\net10.0\MediaTrust.Gatew
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\bin\Debug\net10.0\MediaTrust.Gateway.runtimeconfig.json
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\bin\Debug\net10.0\MediaTrust.Gateway.dll
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\bin\Debug\net10.0\MediaTrust.Gateway.pdb
-C:\Users\Shani\Desktop\MediaTrust\src\Gateway\bin\Debug\net10.0\MediaTrust.Contracts.dll
-C:\Users\Shani\Desktop\MediaTrust\src\Gateway\bin\Debug\net10.0\MediaTrust.Contracts.pdb
-C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.csproj.AssemblyReference.cache
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\rpswa.dswa.cache.json
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.AssemblyInfoInputs.cache
@@ -24,10 +21,13 @@ C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\staticwebassets.
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\staticwebassets.development.json
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\swae.build.ex.cache
-C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTru.01169504.Up2Date
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.dll
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\refint\MediaTrust.Gateway.dll
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.pdb
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.genruntimeconfig.cache
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\ref\MediaTrust.Gateway.dll
 C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.sourcelink.json
+C:\Users\Shani\Desktop\MediaTrust\src\Gateway\bin\Debug\net10.0\System.IO.Hashing.dll
+C:\Users\Shani\Desktop\MediaTrust\src\Gateway\bin\Debug\net10.0\Yarp.ReverseProxy.dll
+C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTrust.Gateway.csproj.AssemblyReference.cache
+C:\Users\Shani\Desktop\MediaTrust\src\Gateway\obj\Debug\net10.0\MediaTru.01169504.Up2Date

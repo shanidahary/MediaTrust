@@ -24,7 +24,6 @@ services:
     depends_on:
       - postgres
 
-
   minio:
     image: minio/minio
     command: server /data --console-address ":9001"
@@ -52,10 +51,12 @@ services:
       dockerfile: src/Gateway/Dockerfile
     ports:
       - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
     depends_on:
-      - rabbitmq
-      - postgres
-      - seq
+      - ingest
+      - orchestrator
+      - detectors
 
   ingest:
     build:
@@ -63,9 +64,20 @@ services:
       dockerfile: src/Ingest/Dockerfile
     ports:
       - "8081:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=mediatrust;Username=mediatrust;Password=mediatrust
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Minio__Endpoint: minio:9000
+      Minio__AccessKey: minio
+      Minio__SecretKey: minio12345
+      Minio__Bucket: mediatrust
+      Minio__UseSsl: "false"
     depends_on:
-      - rabbitmq
       - postgres
+      - rabbitmq
       - minio
       - seq
 
@@ -75,9 +87,15 @@ services:
       dockerfile: src/Orchestrator/Dockerfile
     ports:
       - "8082:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=mediatrust;Username=mediatrust;Password=mediatrust
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
     depends_on:
-      - rabbitmq
       - postgres
+      - rabbitmq
       - seq
 
   detectors:
@@ -86,10 +104,15 @@ services:
       dockerfile: src/Detectors/Dockerfile
     ports:
       - "8083:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=mediatrust;Username=mediatrust;Password=mediatrust
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
     depends_on:
-      - rabbitmq
       - postgres
-      - minio
+      - rabbitmq
       - seq
 
   report:
@@ -98,8 +121,10 @@ services:
       dockerfile: src/Report/Dockerfile
     ports:
       - "8084:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=mediatrust;Username=mediatrust;Password=mediatrust
     depends_on:
-      - rabbitmq
       - postgres
       - seq
 

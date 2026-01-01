@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using MediaTrust.Ingest.Managers;
-using Microsoft.Extensions.Logging;
 
 namespace MediaTrust.Ingest.Controllers;
 
@@ -11,9 +10,7 @@ public sealed class MediaController : ControllerBase
     private readonly MediaIngestManager _manager;
     private readonly ILogger<MediaController> _logger;
 
-    public MediaController(
-        MediaIngestManager manager,
-        ILogger<MediaController> logger)
+    public MediaController(MediaIngestManager manager, ILogger<MediaController> logger)
     {
         _manager = manager;
         _logger = logger;
@@ -24,13 +21,17 @@ public sealed class MediaController : ControllerBase
     {
         try
         {
-            var result = await _manager.HandleUploadAsync(Request, ct);
-            return Ok(result);
+            return Ok(await _manager.HandleUploadAsync(Request, ct));
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogWarning(ex, "Invalid upload request");
+            _logger.LogWarning(ex, "Invalid upload");
             return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Upload failed");
+            return StatusCode(500, "Upload failed");
         }
     }
 }

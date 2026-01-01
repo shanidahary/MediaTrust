@@ -1,88 +1,98 @@
 using MediaTrust.Orchestrator.Accessors;
 using MediaTrust.Orchestrator.Data;
 using MediaTrust.Orchestrator.Models;
+using MediaTrust.Orchestrator.Messaging;
 
 namespace MediaTrust.Orchestrator.Managers;
 
 public sealed class AnalysisJobManager
 {
-    private readonly IAnalysisJobRepository _repository;
+    private readonly IAnalysisJobRepository _repo;
+    private readonly RabbitMqClient _mq;
     private readonly ILogger<AnalysisJobManager> _logger;
 
     public AnalysisJobManager(
-        IAnalysisJobRepository repository,
+        IAnalysisJobRepository repo,
+        RabbitMqClient mq,
         ILogger<AnalysisJobManager> logger)
     {
-        _repository = repository;
+        _repo = repo;
+        _mq = mq;
         _logger = logger;
     }
 
-    public async Task CreateJobAsync(
+    public async Task<IReadOnlyList<AnalysisJob>> GetJobsAsync(CancellationToken ct)
+    {
+        try
+        {
+            _logger.LogInformation("Fetching all analysis jobs");
+            return await _repo.GetAllAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to fetch jobs");
+            throw;
+        }
+    }
+
+    public async Task<Guid> CreateJobAsync(
         Guid mediaId,
         string objectKey,
+        string contentType,
+        long sizeBytes,
+        CancellationToken ct)
+    {
+        try
+        {
+            var job = new AnalysisJob
+            {
+                Id = Guid.NewGuid(),
+                MediaId = mediaId,
+                ObjectKey = objectKey,
+                Status = "Pending",
+                CreatedAtUtc = DateTimeOffset.UtcNow
+            };
+
+            await _repo.AddAsync(job, ct);
+
+            _mq.Publish("detector.basic", new DetectorRequest
+            {
+                JobId = job.Id,
+                MediaId = mediaId,
+                ObjectKey = objectKey,
+                ContentType = contentType,
+                SizeBytes = sizeBytes
+            });
+
+            return job.Id;
+        }
+        catch
+        {
+            _logger.LogError("CreateJobAsync failed");
+            throw;
+        }
+    }
+
+    public async Task UpdateJobStatusAsync(
+        Guid jobId,
+        string status,
         CancellationToken ct)
     {
         _logger.LogInformation(
-            "Creating analysis job. MediaId={MediaId}",
-            mediaId);
-
-        var job = new AnalysisJob
-        {
-            Id = Guid.NewGuid(),
-            MediaId = mediaId,
-            ObjectKey = objectKey,
-            Status = "Pending",
-            CreatedAtUtc = DateTimeOffset.UtcNow
-        };
+            "Business: set job {JobId} status to {Status}",
+            jobId,
+            status);
 
         try
         {
-            await _repository.AddAsync(job, ct);
-
-            _logger.LogInformation(
-                "Analysis job persisted. JobId={JobId}",
-                job.Id);
-        }
-        catch (OperationCanceledException)
-        {
-            _logger.LogWarning(
-                "CreateJobAsync cancelled. MediaId={MediaId}",
-                mediaId);
-            throw;
+            await _repo.UpdateStatusAsync(jobId, status, ct);
         }
         catch (Exception ex)
         {
             _logger.LogError(
                 ex,
-                "Failed to persist analysis job. MediaId={MediaId}",
-                mediaId);
-            throw;
-        }
-    }
-
-    public async Task<IReadOnlyList<AnalysisJobDto>> GetJobsAsync(CancellationToken ct)
-    {
-        try
-        {
-            var jobs = await _repository.GetAllAsync(ct);
-
-            return jobs.Select(j => new AnalysisJobDto
-            {
-                JobId = j.Id,
-                MediaId = j.MediaId,
-                ObjectKey = j.ObjectKey,
-                Status = j.Status,
-                CreatedAtUtc = j.CreatedAtUtc
-            }).ToList();
-        }
-        catch (OperationCanceledException)
-        {
-            _logger.LogWarning("GetJobsAsync cancelled");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to load analysis jobs");
+                "Business failure updating job {JobId}",
+                jobId);
             throw;
         }
     }
