@@ -55,7 +55,7 @@ public sealed class AnalysisJobManager
 
             await _repo.AddAsync(job, ct);
 
-            _mq.Publish("detector.basic", new DetectorRequest
+            _mq.Publish(new DetectorRequest
             {
                 JobId = job.Id,
                 MediaId = mediaId,
