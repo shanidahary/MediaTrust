@@ -2,8 +2,20 @@ using MediaTrust.Report.Accessors;
 using MediaTrust.Report.Data;
 using MediaTrust.Report.Managers;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .WriteTo.Seq(
+            context.Configuration["Seq:ServerUrl"] ?? "http://seq:5341");
+});
 
 // --------------------------------------------------
 // Controllers

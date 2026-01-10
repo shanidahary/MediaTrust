@@ -5,8 +5,20 @@ using MediaTrust.Orchestrator.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Npgsql;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .WriteTo.Seq(
+            context.Configuration["Seq:ServerUrl"] ?? "http://seq:5341");
+});
 
 // --------------------------------------------------
 // Controllers
