@@ -7,12 +7,12 @@ namespace MediaTrust.Detectors.Managers;
 public sealed class DetectorManager
 {
     private readonly IDetectorResultRepository _repo;
-    private readonly HttpClient _http;
+    private readonly IHttpClientFactory  _http;
     private readonly ILogger<DetectorManager> _logger;
 
     public DetectorManager(
         IDetectorResultRepository repo,
-        HttpClient http,
+        IHttpClientFactory http,
         ILogger<DetectorManager> logger)
     {
         _repo = repo;
@@ -24,6 +24,8 @@ public sealed class DetectorManager
         DetectorRequest req,
         CancellationToken ct)
     {
+         var client = _http.CreateClient("gateway");
+
         _logger.LogInformation(
             "Detector started. JobId={JobId}, MediaId={MediaId}",
             req.JobId,
@@ -32,8 +34,8 @@ public sealed class DetectorManager
         try
         {
             // Update job → Processing
-            await _http.PatchAsJsonAsync(
-                $"http://gateway:8080/jobs/{req.JobId}/status",
+            await client.PatchAsJsonAsync(
+                $"jobs/{req.JobId}/status",
                 new { Status = "Processing" },
                 ct);
 
@@ -51,8 +53,8 @@ public sealed class DetectorManager
             }, ct);
 
             // Update job → Completed
-            await _http.PatchAsJsonAsync(
-                $"http://gateway:8080/jobs/{req.JobId}/status",
+            await client.PatchAsJsonAsync(
+                $"jobs/{req.JobId}/status",
                 new { Status = "Completed" },
                 ct);
 
@@ -68,8 +70,8 @@ public sealed class DetectorManager
                 req.MediaId);
 
             // Update job → Failed
-            await _http.PatchAsJsonAsync(
-                $"http://gateway:8080/jobs/{req.JobId}/status",
+            await client.PatchAsJsonAsync(
+                $"jobs/{req.JobId}/status",
                 new { Status = "Failed" },
                 ct);
 

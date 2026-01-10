@@ -57,7 +57,7 @@ public sealed class MediaIngestManager
 
             await _repo.AddAsync(entity, ct);
 
-            var client = _http.CreateClient("orchestrator");
+            var client = _http.CreateClient("gateway");
             await client.PostAsJsonAsync("jobs", new CreateJobRequest
             {
                 MediaId = mediaId,

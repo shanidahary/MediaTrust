@@ -51,11 +51,11 @@ builder.Services.AddSingleton<MinioStorage>();
 // --------------------------------------------------
 // HTTP clients
 // --------------------------------------------------
-builder.Services.AddHttpClient("orchestrator", client =>
+builder.Services.AddHttpClient("gateway", client =>
 {
     client.BaseAddress = new Uri(
-        builder.Configuration["Orchestrator:BaseUrl"]
-        ?? "http://orchestrator:8080/");
+        builder.Configuration["Gateway:BaseUrl"]
+        ?? "http://gateway:8080/");
 });
 
 // --------------------------------------------------
