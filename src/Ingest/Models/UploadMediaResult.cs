@@ -8,4 +8,6 @@ public sealed class UploadMediaResult
     public string ContentType { get; init; } = default!;
     public long SizeBytes { get; init; }
     public DateTimeOffset UploadedAtUtc { get; init; }
+    
+    public bool IsDuplicate { get; set; }
 }

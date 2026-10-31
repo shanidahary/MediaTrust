@@ -7,9 +7,12 @@ using Minio;
 using Polly;
 using Npgsql;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http.Features;
 using Serilog;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Host.UseSerilog((context, services, configuration) =>
 {
@@ -26,6 +29,21 @@ builder.Host.UseSerilog((context, services, configuration) =>
 // Controllers
 // --------------------------------------------------
 builder.Services.AddControllers();
+
+
+// --------------------------------------------------
+// CORS
+// --------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // --------------------------------------------------
 // Postgres
@@ -78,9 +96,29 @@ builder.Services.AddScoped<IStorageAccessor, StorageAccessor>();
 builder.Services.AddScoped<MediaIngestManager>();
 
 // --------------------------------------------------
+// File Upload Size Limits
+// --------------------------------------------------
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit =
+        500 * 1024 * 1024; // 500 MB
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize =
+        500 * 1024 * 1024; // 500 MB
+});
+
+// --------------------------------------------------
 // Build app
 // --------------------------------------------------
 var app = builder.Build();
+
+// --------------------------------------------------
+// CORS
+// --------------------------------------------------
+app.UseCors("ReactFrontend");
 
 // --------------------------------------------------
 // DB migrate on startup (Polly retry)

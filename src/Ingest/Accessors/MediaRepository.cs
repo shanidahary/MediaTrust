@@ -50,4 +50,27 @@ public sealed class MediaRepository : IMediaRepository
         return await _db.MediaItems
             .AnyAsync(x => x.FileName == fileName, ct);
     }
+
+    public async Task<MediaItem?> GetByFileNameAsync(
+    string fileName,
+    CancellationToken ct)
+{
+    try
+    {
+        return await _db.MediaItems
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                x => x.FileName == fileName,
+                ct);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(
+            ex,
+            "Failed to get media item by file name {FileName}",
+            fileName);
+
+        throw;
+    }
+}
 }

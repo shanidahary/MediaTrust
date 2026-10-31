@@ -36,8 +36,31 @@ public sealed class MediaIngestManager
                 throw new InvalidOperationException("Missing file");
 
             var name = Path.GetFileName(file.FileName);
-            if (await _repo.ExistsByFileNameAsync(name, ct))
-                throw new InvalidOperationException("Duplicate file");
+
+            // --------------------------------------------------
+            // Check if media already exists
+            // --------------------------------------------------
+            var existingMedia =
+             await _repo.GetByFileNameAsync(name, ct);
+
+            if (existingMedia != null)
+            {
+                _logger.LogInformation(
+                "Duplicate media found. MediaId={MediaId}, FileName={FileName}",
+                existingMedia.Id,
+                existingMedia.FileName);
+
+                return new UploadMediaResult
+                {
+                    MediaId = existingMedia.Id,
+                    ObjectKey = existingMedia.ObjectKey,
+                    FileName = existingMedia.FileName,
+                    ContentType = existingMedia.ContentType,
+                    SizeBytes = existingMedia.SizeBytes,
+                    UploadedAtUtc = existingMedia.UploadedAtUtc,
+                    IsDuplicate = true
+                };
+            }
 
             var mediaId = Guid.NewGuid();
             var objectKey = $"{DateTime.UtcNow:yyyy/MM/dd}/{name}";
@@ -73,7 +96,8 @@ public sealed class MediaIngestManager
                 FileName = name,
                 ContentType = entity.ContentType,
                 SizeBytes = entity.SizeBytes,
-                UploadedAtUtc = entity.UploadedAtUtc
+                UploadedAtUtc = entity.UploadedAtUtc,
+                IsDuplicate = false
             };
         }
         catch
