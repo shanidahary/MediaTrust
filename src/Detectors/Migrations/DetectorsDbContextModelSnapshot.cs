@@ -41,6 +41,9 @@ namespace MediaTrust.Detectors.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
+                    b.Property<Guid?>("JobId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("MediaId")
                         .HasColumnType("uuid");
 

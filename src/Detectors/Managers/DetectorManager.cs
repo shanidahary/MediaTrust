@@ -85,6 +85,7 @@ public sealed class DetectorManager
             {
                 Id = Guid.NewGuid(),
                 MediaId = req.MediaId,
+                JobId = req.JobId,
                 DetectorName = "ContentIntegrityDetector",
                 Score = score,
                 Details = $"HeaderMatch={headerMatch}, Entropy={entropy:F2}",
@@ -118,6 +119,13 @@ public sealed class DetectorManager
         }
     }
 
+public async Task<IReadOnlyList<DetectorResult>> GetResultsAsync(
+    Guid mediaId,
+    CancellationToken ct)
+{
+    return await _repo.GetByMediaIdAsync(mediaId, ct);
+}
+
     private static async Task<byte[]> ReadHeaderAsync(
         Stream stream,
         int length,
@@ -148,4 +156,13 @@ public sealed class DetectorManager
         Array.Resize(ref buffer, read);
         return buffer;
     }
+
+public async Task<IReadOnlyList<DetectorResult>> GetResultsByJobIdAsync(
+    Guid jobId,
+    CancellationToken ct)
+{
+    return await _repo.GetByJobIdAsync(
+        jobId,
+        ct);
+}   
 }

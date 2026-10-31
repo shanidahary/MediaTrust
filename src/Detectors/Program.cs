@@ -2,6 +2,7 @@ using MediaTrust.Detectors.Accessors;
 using MediaTrust.Detectors.Data;
 using MediaTrust.Detectors.Managers;
 using MediaTrust.Detectors.Messaging;
+using MediaTrust.Detectors.Workers;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Npgsql;
@@ -33,6 +34,21 @@ builder.Services.AddHttpClient("gateway", client =>
     client.BaseAddress = new Uri(
         builder.Configuration["Gateway:BaseUrl"]
         ?? "http://gateway:8080/");
+});
+
+
+// --------------------------------------------------
+// CORS
+// --------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 // --------------------------------------------------
@@ -71,10 +87,19 @@ builder.Services.AddSingleton<MinioStorage>();
 // RabbitMQ (manual client, no consumers)
 builder.Services.AddSingleton<RabbitMqClient>();
 
+// Background worker
+builder.Services.AddHostedService<DetectorWorker>();
+
 // --------------------------------------------------
 // Build app
 // --------------------------------------------------
 var app = builder.Build();
+
+
+// --------------------------------------------------
+// CORS
+// --------------------------------------------------
+app.UseCors("ReactFrontend");
 
 // --------------------------------------------------
 // DB migrate on startup (Polly retry)

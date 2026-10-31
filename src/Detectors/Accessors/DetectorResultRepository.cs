@@ -46,4 +46,28 @@ public sealed class DetectorResultRepository : IDetectorResultRepository
             throw;
         }
     }
+
+
+    public async Task<IReadOnlyList<DetectorResult>> GetByJobIdAsync(
+    Guid jobId,
+    CancellationToken ct)
+{
+    try
+    {
+        return await _db.DetectorResults
+            .AsNoTracking()
+            .Where(x => x.JobId == jobId)
+            .OrderByDescending(x => x.CreatedAtUtc)
+            .ToListAsync(ct);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(
+            ex,
+            "Failed to fetch detector results for JobId {JobId}",
+            jobId);
+
+        throw;
+    }
+}
 }

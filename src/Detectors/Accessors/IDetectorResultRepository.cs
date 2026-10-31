@@ -6,4 +6,6 @@ public interface IDetectorResultRepository
 {
     Task AddAsync(DetectorResult result, CancellationToken ct);
     Task<IReadOnlyList<DetectorResult>> GetByMediaIdAsync(Guid mediaId, CancellationToken ct);
+
+    Task<IReadOnlyList<DetectorResult>> GetByJobIdAsync(Guid jobId, CancellationToken ct);
 }

@@ -4,6 +4,10 @@ public sealed class DetectorResult
 {
     public Guid Id { get; set; }
     public Guid MediaId { get; set; }
+
+    // Analysis job that produced this result
+    public Guid? JobId { get; set; }
+    
     public string DetectorName { get; set; } = default!;
     public double Score { get; set; }
     public string Details { get; set; } = default!;
