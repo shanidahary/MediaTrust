@@ -45,6 +45,21 @@ public sealed class JobsController : ControllerBase
         }
     }
 
+    [HttpGet("media/{mediaId:guid}")]
+    public async Task<IActionResult> GetLatestByMediaId(
+    Guid mediaId,
+        CancellationToken ct)
+    {
+        var job = await _manager.GetLatestByMediaIdAsync(
+            mediaId,
+            ct);
+
+        if (job == null)
+         return NotFound();
+
+     return Ok(job);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateJobHttpRequest req, CancellationToken ct)
     {

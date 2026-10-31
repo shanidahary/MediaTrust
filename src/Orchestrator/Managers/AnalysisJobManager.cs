@@ -73,6 +73,15 @@ public sealed class AnalysisJobManager
         }
     }
 
+    public async Task<AnalysisJob?> GetLatestByMediaIdAsync(
+    Guid mediaId,
+    CancellationToken ct)
+{
+    return await _repo.GetLatestByMediaIdAsync(
+        mediaId,
+        ct);
+}
+
     public async Task UpdateJobStatusAsync(
         Guid jobId,
         string status,

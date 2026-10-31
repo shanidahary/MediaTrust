@@ -65,6 +65,37 @@ public sealed class AnalysisJobRepository : IAnalysisJobRepository
         }
     }
 
+    public async Task<AnalysisJob?> GetLatestByMediaIdAsync(
+    Guid mediaId,
+    CancellationToken ct)
+{
+    try
+    {
+        return await _db.AnalysisJobs
+            .AsNoTracking()
+            .Where(x => x.MediaId == mediaId)
+            .OrderByDescending(x => x.CreatedAtUtc)
+            .FirstOrDefaultAsync(ct);
+    }
+    catch (OperationCanceledException)
+    {
+        _logger.LogWarning(
+            "GetLatestByMediaIdAsync cancelled. MediaId={MediaId}",
+            mediaId);
+
+        throw;
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(
+            ex,
+            "Failed to get latest AnalysisJob. MediaId={MediaId}",
+            mediaId);
+
+        throw;
+    }
+}
+
     public async Task UpdateStatusAsync(
         Guid jobId,
         string status,

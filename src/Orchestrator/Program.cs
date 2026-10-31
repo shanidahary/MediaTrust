@@ -7,6 +7,7 @@ using Polly;
 using Npgsql;
 using Serilog;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, services, configuration) =>
@@ -43,9 +44,28 @@ builder.Services.AddScoped<AnalysisJobManager>();
 builder.Services.AddSingleton<RabbitMqClient>();
 
 // --------------------------------------------------
+// CORS - React Frontend
+// --------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// --------------------------------------------------
 // Build app
 // --------------------------------------------------
 var app = builder.Build();
+
+// --------------------------------------------------
+// Enable CORS
+// --------------------------------------------------
+app.UseCors("ReactFrontend");
 
 // --------------------------------------------------
 // DB migrate on startup (Polly retry)
