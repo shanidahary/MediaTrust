@@ -41,7 +41,7 @@ services:
       - "5341:80"
     environment:
       ACCEPT_EULA: "Y"
-      SEQ_FIRSTRUN_ADMINPASSWORD: "Admin1234!"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "Admin123!"
     volumes:
       - seq-data:/data
 
@@ -129,6 +129,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=mediatrust;Username=mediatrust;Password=mediatrust
+      Gemini__ApiKey: ${GEMINI_API_KEY}
     depends_on:
       - postgres
       - seq

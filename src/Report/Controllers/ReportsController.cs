@@ -37,4 +37,33 @@ public sealed class ReportsController : ControllerBase
             return StatusCode(500, "Report failed");
         }
     }
+    // --------------------------------------------------
+    // Get Analysis Explanation By Job
+    // --------------------------------------------------
+    [HttpGet("explanation/{jobId:guid}")]
+    public async Task<IActionResult> GetExplanation(
+        Guid jobId,
+        CancellationToken ct)
+    {
+        try
+        {
+            var explanation =
+                await _manager.BuildExplanationAsync(jobId, ct);
+
+            return Ok(explanation);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to return explanation for JobId {JobId}",
+                jobId);
+
+            return StatusCode(500, "Explanation failed");
+        }
+    }
 }

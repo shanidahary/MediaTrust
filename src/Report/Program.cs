@@ -38,6 +38,33 @@ builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<ReportManager>();
 
 // --------------------------------------------------
+// Detectors HTTP Client
+// --------------------------------------------------
+builder.Services.AddHttpClient("detectors", client =>
+{
+    client.BaseAddress = new Uri("http://detectors:8080/");
+});
+
+// --------------------------------------------------
+// Accessors
+// --------------------------------------------------
+builder.Services.AddScoped<IDetectorsAccessor, DetectorsAccessor>();
+
+// --------------------------------------------------
+// AI Accessor
+// --------------------------------------------------
+builder.Services.AddScoped<IAiAccessor, GeminiAiAccessor>();
+
+// --------------------------------------------------
+// Gemini HTTP Client
+// --------------------------------------------------
+builder.Services.AddHttpClient("gemini", client =>
+{
+    client.BaseAddress =
+        new Uri("https://generativelanguage.googleapis.com/");
+});
+
+// --------------------------------------------------
 // Build app
 // --------------------------------------------------
 var app = builder.Build();

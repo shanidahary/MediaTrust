@@ -6,13 +6,19 @@ namespace MediaTrust.Report.Managers;
 public sealed class ReportManager
 {
     private readonly IReportRepository _repo;
+    private readonly IDetectorsAccessor _detectorsAccessor;
+    private readonly IAiAccessor _aiAccessor;
     private readonly ILogger<ReportManager> _logger;
 
     public ReportManager(
         IReportRepository repo,
+        IDetectorsAccessor detectorsAccessor,
+        IAiAccessor aiAccessor,
         ILogger<ReportManager> logger)
     {
         _repo = repo;
+        _detectorsAccessor = detectorsAccessor;
+        _aiAccessor = aiAccessor;
         _logger = logger;
     }
 
@@ -57,4 +63,51 @@ public sealed class ReportManager
             throw;
         }
     }
+// --------------------------------------------------
+// Build Analysis Explanation
+// --------------------------------------------------
+public async Task<AnalysisExplanationResponse> BuildExplanationAsync(
+    Guid jobId,
+    CancellationToken ct)
+{
+    try
+    {
+        var results =
+            await _detectorsAccessor.GetByJobIdAsync(jobId, ct);
+
+        var result = results
+            .OrderByDescending(x => x.CreatedAtUtc)
+            .FirstOrDefault();
+
+        if (result == null)
+        {
+            throw new KeyNotFoundException(
+                $"No detector result found for JobId {jobId}");
+        }
+
+        var explanation =
+            await _aiAccessor.GenerateExplanationAsync(
+                result.DetectorName,
+                result.Score,
+                result.Details,
+                ct);
+
+        return new AnalysisExplanationResponse
+        {
+            JobId = jobId,
+            MediaId = result.MediaId,
+            RiskScore = result.Score,
+            Explanation = explanation
+        };
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(
+            ex,
+            "Failed to build explanation for JobId {JobId}",
+            jobId);
+
+        throw;
+    }
+}
 }
