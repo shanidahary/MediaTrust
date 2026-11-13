@@ -65,10 +65,25 @@ builder.Services.AddHttpClient("gemini", client =>
 });
 
 // --------------------------------------------------
+// CORS
+// --------------------------------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// --------------------------------------------------
 // Build app
 // --------------------------------------------------
 var app = builder.Build();
 
+app.UseCors("ReactFrontend");
 // --------------------------------------------------
 // Map endpoints
 // --------------------------------------------------
