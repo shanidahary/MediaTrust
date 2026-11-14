@@ -1,0 +1,18 @@
+# Keep host outputs and unrelated applications out of backend build contexts.
+.git
+.vs
+.idea
+**/bin
+**/obj
+**/node_modules
+mediatrust-ui
+tests
+docs
+artifacts
+TestResults
+
+# Runtime secrets must not be included in Docker build contexts.
+**/.env
+**/.env.*
+**/appsettings.Local.json
+**/*.user.secrets.json
