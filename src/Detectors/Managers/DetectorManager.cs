@@ -75,11 +75,7 @@ public sealed class DetectorManager
             var entropy = DetectorUtils.CalculateEntropy(buffer);
 
             // Score logic
-            var score = 0.0;
-            if (!headerMatch) score += 0.6;
-            if (entropy > 7.2) score += 0.4;
-
-            score = Math.Min(score, 1.0);
+            var score = ContentIntegrityScoring.CalculateScore(headerMatch, entropy);
 
             await _repo.AddAsync(new DetectorResult
             {

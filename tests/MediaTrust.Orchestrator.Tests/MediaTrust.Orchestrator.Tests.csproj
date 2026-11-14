@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.1" />
+    <ProjectReference Include="../../src/Orchestrator/MediaTrust.Orchestrator.csproj" />
+  </ItemGroup>
+</Project>

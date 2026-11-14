@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../../src/Detectors/MediaTrust.Detectors.csproj" />
+  </ItemGroup>
+</Project>
