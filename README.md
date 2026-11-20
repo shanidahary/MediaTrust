@@ -237,15 +237,29 @@ The most recent implementation verification passed all 35 tests and completed th
 
 ## Screenshots
 
-Screenshot assets are not included yet. Place future captures in [`docs/images/`](docs/images/README.md); the entries below are placeholders, not image links.
+### Analysis Workspace
 
-| View | Screenshot status |
-| --- | --- |
-| Media upload dashboard | To be added |
-| Latest Analysis | To be added |
-| AI Explanation | To be added |
-| Job History | To be added |
-| Job Details | To be added |
+The main MediaTrust workspace provides media upload, analysis results, and direct access to previous analysis jobs.
+
+![Analysis Workspace](docs/images/dashboard-overview.png)
+
+### Latest Analysis & AI Explanation
+
+Each analysis displays the detector findings, heuristic risk score, technical signals, and a plain-language explanation generated with Gemini.
+
+![Latest Analysis & AI Explanation](docs/images/latest-analysis-ai.png)
+
+### Analysis History
+
+Previous detector results for the same media remain available separately from the latest analysis, allowing repeated analyses to be compared over time.
+
+![Analysis History](docs/images/analysis-history.png)
+
+### Job History & Job-Specific Results
+
+Each analysis execution has its own Job ID and job-specific detector result, providing traceability between uploaded media and individual analysis runs.
+
+![Job History & Job-Specific Results](docs/images/job-history-details.png)
 
 ## Project Structure
 
@@ -283,6 +297,6 @@ MediaTrust/
 - Additional detectors and stronger file-format validation.
 - Authentication, authorization, and user-owned media.
 - Persistent AI explanation caching.
-- Integration and browser tests, plus GitHub Actions CI/CD.
+- Integration and browser end-to-end tests, plus deployment/CD automation.
 - Bounded queue retries, dead-letter handling, and improved observability.
 - Explicitly managed persistent infrastructure storage and cloud deployment.
